@@ -13,6 +13,9 @@ export default class Terminal extends BaseModel {
   @column()
   public descricao: string
 
+  @column()
+  public tipo: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

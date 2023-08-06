@@ -1,4 +1,5 @@
 import { schema } from '@ioc:Adonis/Core/Validator'
+import Database from '@ioc:Adonis/Lucid/Database'
 import EstabelecimentosMesh from "App/Models/EstabelecimentosMesh"
 import Integracao from 'App/Models/Integracao'
 import Terminal from "App/Models/Terminal"
@@ -7,19 +8,6 @@ import { handleErrorResponse } from "App/Utils/HandleErrorResponse"
 import moment from "moment"
 
 export default class UsersController {
-
-    private marketplace: string | undefined
-    private apiKey: string | undefined
-
-    constructor() {
-        this.buscarConexao()
-    }
-
-    private buscarConexao = async () => {
-        const api = await Integracao.query().first()
-        this.marketplace = api?.identificador
-        this.apiKey = api?.chave
-    }
 
     private tipoPagamento = (tipo: any) => {
         switch (tipo) {
@@ -34,28 +22,30 @@ export default class UsersController {
         }
     }
 
-    private buscarTerminal = async (transacao: any, terminais: any) => {
-        const terminal = terminais.find((item: { id: any }) => item.id == transacao.point_of_sale.identification_number)
-        if (terminal) {
-            return (terminal.descricao == '' || terminal.descricao == null) ? terminal.serial : terminal.descricao
-        } else {
-            const options = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `https://api.zoop.ws/v1/card-present/terminals/${transacao.point_of_sale.identification_number}`,
-                headers: {
-                    accept: 'application/json',
-                    authorization: 'Basic ' + this.apiKey
+    private buscarTerminal = async (transacao: any, item: any) => {
+        if (transacao.point_of_sale.identification_number != null) {
+            const terminal = await Terminal.query().whereILike('id', `${transacao.point_of_sale.identification_number}`).first()
+            if (terminal) {
+                return (terminal.descricao == '' || terminal.descricao == null) ? terminal.serial : terminal.descricao
+            } else {
+                const options = {
+                    method: 'get',
+                    maxBodyLength: Infinity,
+                    url: `https://api.zoop.ws/v1/card-present/terminals/${transacao.point_of_sale.identification_number}`,
+                    headers: {
+                        accept: 'application/json',
+                        authorization: 'Basic ' + item.chave
+                    }
                 }
+
+                const result = await api(options)
+
+                if (!result.id) return 'Terminal não localizado'
+
+                return result.serial_number
             }
-
-            const result = await api(options)
-
-            if (!result.id) return 'Terminal não localizado'
-
-            await Terminal.updateOrCreate({ id: result.id }, { id: result.id, serial: result.serial_number })
-
-            return result.serial_number
+        } else {
+            return 'Terminal não localizado'
         }
     }
 
@@ -68,6 +58,7 @@ export default class UsersController {
                     id: schema.string(),
                     nome: schema.string(),
                     cnpj: schema.number(),
+                    tipo: schema.number()
                 })
             })
 
@@ -87,9 +78,12 @@ export default class UsersController {
             const dados = await request.validate({
                 schema: schema.create({
                     serial: schema.string(),
-                    descricao: schema.string()
+                    descricao: schema.string(),
+                    tipo: schema.string()
                 })
             })
+
+            const integracao = await Integracao.query().where('tipo', dados.tipo).firstOrFail()
 
             const options = {
                 method: 'get',
@@ -97,7 +91,7 @@ export default class UsersController {
                 url: `https://api.zoop.ws/v1/card-present/terminals/search?serial_number=${dados.serial}`,
                 headers: {
                     accept: 'application/json',
-                    authorization: 'Basic ' + this.apiKey
+                    authorization: 'Basic ' + integracao.chave
                 }
             }
 
@@ -105,7 +99,7 @@ export default class UsersController {
 
             if (!result) throw new Error("Terminal não encontrado");
 
-            await Terminal.updateOrCreate({ id: result.id }, { id: result.id, serial: result.serial_number, descricao: dados.descricao })
+            await Terminal.updateOrCreate({ id: result.id }, { id: result.id, serial: result.serial_number, descricao: dados.descricao, tipo: dados.tipo })
 
             return response.status(201).send("Terminal vinculado com sucesso")
         } catch (error) {
@@ -118,11 +112,17 @@ export default class UsersController {
             await auth.use('web').authenticate()
             const usuario = await auth.use('web').user
 
-            const terminal = await Terminal.query()
-
-            const estabelecimentos = usuario.estabelecimento !== null
-                ? await EstabelecimentosMesh.query().whereIn('id', usuario.estabelecimento).orderBy('nome', 'asc')
-                : await EstabelecimentosMesh.query().orderBy('nome', 'asc')
+            let estabelecimentos = await Database.query()
+                .select([
+                    'em.*', 'i.chave', 'i.identificador'
+                ])
+                .from('estabelecimentos_mesh as em')
+                .leftJoin('integracao as i', 'i.tipo', 'em.tipo')
+                .where((query) => {
+                    if (usuario.estabelecimento !== null)
+                        query.whereIn('em.id', usuario.estabelecimento)
+                })
+                .orderBy('em.nome', 'asc')
 
             const { dataInicial, dataFinal } = params
             const date_range_gte_formatado = moment(dataInicial + "T04:00:00.000Z").toISOString()
@@ -131,41 +131,43 @@ export default class UsersController {
             const retorno = new Array()
 
             for (const item of estabelecimentos) {
-                const transacoes = await this.consultarTransacoes(date_range_gte_formatado, date_range_lte_formatado, item.id)
+                const transacoes = await this.consultarTransacoes(date_range_gte_formatado, date_range_lte_formatado, item)
+
                 retorno.push({
                     estabelecimento: item.nome,
                     cnpj: item.cnpj,
                     saldo: {
                         quantidade: transacoes.length,
-                        total: transacoes.reduce((total, item) => total = total + parseFloat(item.amount), 0).toFixed(2),
-                        tarifa: transacoes.reduce((total, item) => total = total + parseFloat(item.fees), 0).toFixed(2),
-                        saldo: transacoes.reduce((total, item) => total = total + (parseFloat(item.amount) - parseFloat(item.fees)), 0).toFixed(2),
-                        transacoes: await Promise.all(transacoes.map(async (item) => {
-                            const descricaoTerminal = await this.buscarTerminal(item, terminal);
-                            return (
-                                {
-                                    id: item.id,
-                                    total: item.amount,
-                                    forma_pagamento: (this.tipoPagamento(item.payment_type)),
-                                    primeiros_digitos: item.payment_method.first4_digits,
-                                    ultimos_digitos: item.payment_method.last4_digits,
-                                    data: moment(item.updated_at).format('DD/MM/YYYY'),
-                                    hora: moment(item.updated_at).format('HH:mm:ss'),
+                        total: transacoes.reduce((total, item) => total + parseFloat(item.amount), 0).toFixed(2),
+                        tarifa: transacoes.reduce((total, item) => total + parseFloat(item.fees), 0).toFixed(2),
+                        saldo: transacoes.reduce((total, item) => total + (parseFloat(item.amount) - parseFloat(item.fees)), 0).toFixed(2),
+                        transacoes: await Promise.all(
+                            transacoes.map(async (transacao) => {
+                                const descricaoTerminal = await this.buscarTerminal(transacao, item);
+                                return {
+                                    id: transacao.id,
+                                    total: transacao.amount,
+                                    forma_pagamento: (this.tipoPagamento(transacao.payment_type)),
+                                    primeiros_digitos: transacao.payment_method.first4_digits,
+                                    ultimos_digitos: transacao.payment_method.last4_digits,
+                                    data: moment(transacao.updated_at).format('DD/MM/YYYY'),
+                                    hora: moment(transacao.updated_at).format('HH:mm:ss'),
                                     terminal: descricaoTerminal,
-                                    taxa: item.fees
-                                }
-                            )
-                        }))
+                                    taxa: transacao.fees
+                                };
+                            })
+                        )
                     }
-                })
+                });
             }
             return response.status(200).send(retorno)
         } catch (error) {
+            console.log(error)
             handleErrorResponse(response, error)
         }
     }
 
-    private async consultarTransacoes(date_range_gte_formatado: string, date_range_lte_formatado: string, id: string) {
+    private async consultarTransacoes(date_range_gte_formatado: string, date_range_lte_formatado: string, item: any) {
         let page = 1
         let nextPage = true
 
@@ -177,10 +179,10 @@ export default class UsersController {
             const options = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: `https://api.zoop.ws/v1/marketplaces/${this.marketplace}/sellers/${id}/transactions${filter}`,
+                url: `https://api.zoop.ws/v1/marketplaces/${item.identificador}/sellers/${item.id}/transactions${filter}`,
                 headers: {
                     accept: 'application/json',
-                    authorization: 'Basic ' + this.apiKey
+                    authorization: 'Basic ' + item.chave
                 }
             }
 

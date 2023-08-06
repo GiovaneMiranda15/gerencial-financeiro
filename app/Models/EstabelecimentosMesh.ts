@@ -13,6 +13,9 @@ export default class EstabelecimentosMesh extends BaseModel {
   @column()
   public cnpj: string
 
+  @column()
+  public tipo: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

@@ -18,17 +18,21 @@ export default class IntegracaoUseController {
                 dados.push({
                     establishment: item.nome, cnpj: item.cnpj,
                     saldo: {
-                        quantidade: recebimentos.length,
-                        total: recebimentos.reduce((total: number, item: { pagamentos: { valor_pago: string; }[]; }) => total = total + parseFloat(item.pagamentos[0].valor_pago), 0).toFixed(2),
-                        tarifa: recebimentos.reduce((total: number, item: { valor_pago: string; valor_liquido_credenciado: string; }) => total = total + (parseFloat(item.valor_pago) - parseFloat(item.valor_liquido_credenciado)), 0).toFixed(2),
-                        saldo: recebimentos.reduce((total: number, item: { pagamentos: { valor_liquido_credenciado: string; }[]; }) => total = total + parseFloat(item.pagamentos[0].valor_liquido_credenciado), 0).toFixed(2),
+                        quantidade: recebimentos.reduce((total: number, item: { pagamentos: { valor_pago: string }[] }) => {
+                            return total + item.pagamentos.reduce((total) => total + 1, 0);
+                        }, 0),
+                        total: recebimentos.reduce((total: number, item: { pagamentos: { valor_pago: string }[] }) => {
+                            return total + item.pagamentos.reduce((subtotal, pagamento) => subtotal + parseFloat(pagamento.valor_pago), 0);
+                        }, 0).toFixed(2),
+                        tarifa: recebimentos.reduce((total: number, item: { pagamentos: { valor_taxa_credenciado: string }[] }) => {
+                            return total + item.pagamentos.reduce((subtotal, pagamento) => subtotal + parseFloat(pagamento.valor_taxa_credenciado), 0);
+                        }, 0).toFixed(2),
+                        saldo: recebimentos.reduce((total: number, item: { pagamentos: { valor_liquido_credenciado: string }[] }) => {
+                            return total + item.pagamentos.reduce((subtotal, pagamento) => subtotal + parseFloat(pagamento.valor_liquido_credenciado), 0);
+                        }, 0).toFixed(2),
                         saldo_final: saldo_final,
                         recebimentos: await Promise.all(recebimentos.map(async (item) => {
-                            return (
-                                {
-                                   item
-                                }
-                            )
+                            return { item };
                         }))
                     }
                 })
@@ -40,13 +44,13 @@ export default class IntegracaoUseController {
         }
     }
 
-    public async consultarRecebimentos(item: any, params: any) {
+    private async consultarRecebimentos(item: any, params: any) {
         try {
             const { dataInicial, dataFinal } = params
             const options = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: `https://api.useboletos.com.br/credenciados/v1/${item.identificador}/cobrancas-pagas`,
+                url: `https://api.useboletos.com.br/credenciados/v1/${item.id}/cobrancas-pagas`,
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Credenciado-Chave': item.chave
@@ -66,12 +70,12 @@ export default class IntegracaoUseController {
         }
     }
 
-    public async consultarSaldo(item: any) {
+    private async consultarSaldo(item: any) {
         try {
             const options = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: `https://api.useboletos.com.br/credenciados/v1/${item.identificador}/saldo`,
+                url: `https://api.useboletos.com.br/credenciados/v1/${item.id}/saldo`,
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Credenciado-Chave': item.chave

@@ -57,4 +57,9 @@ Route.group(() => {
     Route.post('cadatrar', 'IntegracaoMeshController.cadastrar')
     Route.post('vincular', 'IntegracaoMeshController.vincularTerminal')
   }).prefix('mesh')
+
+  Route.group(()=>{
+    Route.get('transacao/:dataInicial/:dataFinal', 'IntegracaoUseController.buscarRecebimentos')
+    Route.post('repasse', 'IntegracaoUseController.repasse')
+  }).prefix('use')
 }).prefix('api')

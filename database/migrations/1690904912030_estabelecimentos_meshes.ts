@@ -8,6 +8,7 @@ export default class extends BaseSchema {
       table.string('id').primary().notNullable()
       table.string('nome', 255).notNullable()
       table.string('cnpj', 18).notNullable()
+      table.integer('tipo').notNullable()
       table.timestamp('created_at', { useTz: true }).notNullable()
       table.timestamp('updated_at', { useTz: true }).notNullable()
     })
