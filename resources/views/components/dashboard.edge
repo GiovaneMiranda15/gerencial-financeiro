@@ -1,0 +1,274 @@
+<style>
+    .dashboard-container {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        padding: 20px;
+        width: 80%;
+    }
+
+    .dashboard-title {
+        margin-bottom: 20px;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .date-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .filter-button {
+        background-color: #0f6b35;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        padding: 8px 15px;
+        transition: background-color 0.3s;
+    }
+
+    .filter-button:hover {
+        background-color: #094723;
+    }
+
+    #view-all,
+    #view-detailed {
+        background-color: #0f6b35;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        padding: 8px 15px;
+        transition: background-color 0.3s;
+    }
+
+    #view-all,
+    #view-detailed:hover {
+        background-color: #094723;
+    }
+
+    .active-view {
+        background-color: #094723;
+    }
+
+    .estabelecimento-select,
+    .tipo-select,
+    .contrato-input,
+    .observacao-input,
+    .valor-inicial-input,
+    .valor-final-input {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 8px;
+        width: 150px;
+    }
+
+    .estabelecimento-select {
+        background-color: white;
+        cursor: pointer;
+    }
+
+    .data-legend {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .scrollable-table {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    .data-table {
+        max-height: calc(100vh - 250px);
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-top: none;
+    }
+
+    .data-table table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+
+    .data-table thead th {
+        text-align: left;
+        background-color: #f2f2f2;
+        font-weight: bold;
+        padding: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .data-table tbody td {
+        text-align: left;
+        padding: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .print-button {
+        background-color: #6c757d;
+        color: white;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 15px;
+        transition: background-color 0.3s;
+    }
+
+    .print-button:hover {
+        background-color: #5a6268;
+    }
+
+    @media screen and (max-width: 768px) {
+        .dashboard-container {
+            width: 90%;
+        }
+
+        .estabelecimento-select,
+        .tipo-select,
+        .contrato-input,
+        .observacao-input,
+        .valor-inicial-input,
+        .valor-final-input {
+            width: 100%;
+        }
+    }
+</style>
+<div class="dashboard-container">
+    <div id="relatorioUse">
+        <h3 class="dashboard-title">Dashboard Use</h3>
+        <div class="dashboard-header">
+            <form action="" method="post" class="date-form">
+                <input type="date" name="startDate" class="date-input" placeholder="Data de início">
+                <input type="date" name="endDate" class="date-input" placeholder="Data de término">
+                <button type="submit" class="filter-button">Filtrar</button>
+                <div class="print-button-container">
+                <button id="imprimir" class="print-button">Imprimir</button>
+            </div>
+            </form>
+            
+            <div class="view-buttons">
+                <button id="view-all" class="active-view">Todos</button>
+                <button id="view-detailed">Detalhado</button>
+            </div>
+        </div>
+        <fieldset class="data-fieldset">
+            <div class="data-filters">
+                <select name="estabelecimento" class="estabelecimento-select">
+                    <option value="">Selecione um estabelecimento</option>
+                </select>
+                <select name="tipo" class="tipo-select">
+                    <option value="">Selecione a forma de cobrança</option>
+                    <option value="BOLETO">Boleto</option>
+                    <option value="PIX">Pix via Boleto</option>
+                    <option value="PIX_AVULSO">Pix</option>
+                </select>
+                <input type="text" class="contrato-input" placeholder="Contrato">
+                <input type="text" class="observacao-input" placeholder="Observacao">
+                <input type="number" class="valor-inicial-input" placeholder="Valor inicial">
+                <input type="number" class="valor-final-input" placeholder="Valor final">
+
+            </div>
+            <div class="scrollable-table">
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Campo</th>
+                                <th>Campo</th>
+                                <th>Campo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22])
+                            <tr>
+                                <td>Campo</td>
+                                <td>Campo</td>
+                                <td>Campo</td>
+                                <td>Campo</td>
+                            </tr>
+                            @end
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div id="relatorioZoop">
+        <h3 class="dashboard-title">Dashboard Zoop</h3>
+        <div class="dashboard-header">
+            <form action="" method="post" class="date-form">
+                <input type="date" name="startDate" class="date-input" placeholder="Data de início">
+                <input type="date" name="endDate" class="date-input" placeholder="Data de término">
+                <button type="submit" class="filter-button">Filtrar</button>
+                <div class="print-button-container">
+                <button id="imprimir" class="print-button">Imprimir</button>
+            </div>
+            </form>
+            
+            <div class="view-buttons">
+                <button id="view-all" class="active-view">Todos</button>
+                <button id="view-detailed">Detalhado</button>
+            </div>
+        </div>
+        <fieldset class="data-fieldset">
+            <div class="data-filters">
+                <select name="estabelecimento" class="estabelecimento-select">
+                    <option value="">Selecione um estabelecimento</option>
+                </select>
+                <select name="tipo" class="tipo-select">
+                    <option value="">Selecione a forma de cobrança</option>
+                    <option value="BOLETO">Boleto</option>
+                    <option value="PIX">Pix via Boleto</option>
+                    <option value="PIX_AVULSO">Pix</option>
+                </select>
+                <input type="text" class="contrato-input" placeholder="Contrato">
+                <input type="text" class="observacao-input" placeholder="Observacao">
+                <input type="number" class="valor-inicial-input" placeholder="Valor inicial">
+                <input type="number" class="valor-final-input" placeholder="Valor final">
+
+            </div>
+            <div class="scrollable-table">
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Campo</th>
+                                <th>Campo</th>
+                                <th>Campo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22])
+                            <tr>
+                                <td>Campo</td>
+                                <td>Campo</td>
+                                <td>Campo</td>
+                                <td>Campo</td>
+                            </tr>
+                            @end
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById('relatorioUse').style.display = 'none'
+            document.getElementById('relatorioZoop').style.display = 'block'
+     })
+</script>

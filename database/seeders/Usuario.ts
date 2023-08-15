@@ -1,6 +1,7 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import Usuario from 'App/Models/Usuario'
 const dados = {
+  nome: 'Administrador',
   cpf: '000.000.000-00',
   password: '123789',
   estabelecimento: null,

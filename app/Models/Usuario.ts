@@ -9,6 +9,9 @@ export default class Usuario extends BaseModel {
   public id: number
 
   @column()
+  public nome: string
+
+  @column()
   public cpf: string
 
   @column({ serializeAs: null, columnName: 'senha' })

@@ -1,0 +1,188 @@
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Righteous&family=Sarala:wght@400;700&display=swap");
+
+    .modal-dialog {
+        max-width: 600px;
+    }
+
+    .modal-content {
+        background-color: white;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        font-family: 'Sarala'
+    }
+
+    .modal-header {
+        background-color: #343a40;
+        color: white;
+        padding: 15px;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        border-top: none;
+        padding: 15px;
+        text-align: right;
+    }
+
+    .btn {
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #0f6b35;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .btn-primary:hover {
+        background-color: #094723;
+    }
+
+    .btn-close {
+        font-size: 1.2rem;
+        color: #fff;
+    }
+
+    .modal-body a:hover {
+        text-decoration: underline;
+    }
+
+    .modal-alerts {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1050;
+        font-family: 'Sarala'
+    }
+
+    .modal-alert {
+        width: 300px;
+        margin-bottom: 10px;
+    }
+
+    .modal-body form {
+        max-width: 100%;
+    }
+
+    .modal-body input,
+    .modal-body select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+
+        .modal-body input,
+        .modal-body select {
+            width: 100%;
+        }
+
+        .modal-footer {
+            display: flex;
+            flex-direction: column;
+            justify-content: center
+        }
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-dropdown {
+        z-index: 9999;
+        position: relative !important;
+    }
+
+    .cadastrar-usuario, 
+    .vincular-terminal, 
+    .cadastrar-estabelecimento-zoop, 
+    .cadastrar-estabelecimento-use {
+        display: none;
+    }
+</style>
+<div class="modal fade" id="modalCadastro" tabindex="-1" aria-labelledby="modalCadastroLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCadastroLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @include('./components/vincular-terminal')
+                @include('./components/cadastro-estabelecimento-use')
+                @include('./components/cadastro-estabelecimento-zoop')
+                @include('./components/cadastro-usuario')
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-alerts"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const btnSalvar = document.querySelector("#modalCadastro .btn-primary");
+        const modalAlerts = document.querySelector(".modal-alerts");
+        const alert = document.createElement("div");
+
+        btnSalvar.addEventListener("click", async () => {
+            try {
+                const response = { success: true };
+
+                if (!response.success) throw new Error();
+                alert.classList.add("alert", "alert-success", "modal-alert");
+                alert.setAttribute("role", "alert");
+                alert.innerText = "Dados salvos com sucesso!";
+
+                modalAlerts.appendChild(alert);
+
+                setTimeout(() => {
+                    modalAlerts.removeChild(alert);
+                    $("#modalCadastro").modal("hide");
+                }, 2000);
+            } catch (error) {
+                alert.classList.add("alert", "alert-danger", "modal-alert");
+                alert.setAttribute("role", "alert");
+                alert.innerText = "Erro ao salvar dados. Por favor, tente novamente.";
+
+                modalAlerts.appendChild(alert);
+                setTimeout(() => {
+                    modalAlerts.removeChild(alert);
+                }, 2000);
+            }
+        });   
+
+        $("#modalCadastro").on("hidden.bs.modal", function () {
+            $("body").removeClass("modal-open");
+            $(".modal-backdrop").remove();
+            document.getElementById('vincularTerminal').style.display = 'none'
+            document.getElementById('cadastroUsuario').style.display = 'none'
+            document.getElementById('cadastroEstabelecimentoZoop').style.display = 'none'
+            document.getElementById('cadastroEstabelecimentoUse').style.display = 'none'
+        });
+    });
+</script>

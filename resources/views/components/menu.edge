@@ -1,0 +1,150 @@
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Righteous&family=Sarala:wght@400;700&display=swap");
+
+    .menu {
+        position: relative;
+        width: 15%;
+        height: 100vh;
+        padding: 15px;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #0f6b35;
+        color: white;
+        font-family: 'Sarala';
+        align-items: left;
+        font-size: 14px
+    }
+
+    .logo-pax {
+        position: absolute;
+        bottom: 15vh;
+        height: 5%;
+        width: 70%;
+        margin-left: 10%
+    }
+
+    .btn-sair {
+        position: absolute;
+        bottom: 5vh;
+        height: 5%;
+        width: 70%;
+        padding: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-left: 10%;
+        border: none;
+        border-radius: 2px;
+        background-color: #065226;
+        color: white;
+    }
+
+    .btn-sair:hover {
+        background-color: #033518;
+    }
+
+    @media (max-width: 768px) {
+        span {
+            display: none
+        }
+
+        .btn-sair {
+            margin-left: -3%;
+            width: 60%;
+            bottom: 10vh;
+            background-color: transparent
+        }
+
+        .logo-pax {
+            position: absolute;
+            bottom: 12vh;
+            height: 15%;
+            width: 90%;
+            margin-left: -15%
+        }
+
+        .subopcoes {
+            display: none !important;
+            padding-left: 1px;
+            flex-direction: column;
+        }
+
+        .opcao:hover .subopcoes {
+            display: flex !important;
+        }
+    }
+
+    .opcao {
+        padding: 5px;
+        cursor: pointer;
+        border-radius: 2px;
+        width: 100%;
+        transition: background-color 0.3s;
+    }
+
+    .opcao:hover {
+        background-color: #065226;
+    }
+
+    .subopcoes {
+        display: flex;
+        padding-left: 1px;
+        flex-direction: column;
+    }
+
+    .subopcao {
+        padding: 5px;
+        cursor: pointer;
+        color: #ddd;
+        border-radius: 2px;
+        transition: background-color 0.5s;
+    }
+
+    .subopcao:hover {
+        background-color: #033518;
+    }
+
+
+    a {
+        color: white;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: white;
+
+        text-decoration: none;
+    }
+</style>
+<div class="menu" id="menu">
+    <h5>Bem-vindo<br>{{ auth.user.nome }}</h5>
+    <div class="navegacao">
+        <div class="opcao" id="opcaoZoop"><i class="fa-solid fa-credit-card"></i> <Span>Zoop</Span>
+            <div class="subopcoes">
+                <a class="subopcao" id="dashboardZoop"><i class="fa-solid fa-chart-line"></i> <Span>Dashboard</Span></a>
+                <a class="subopcao" data-bs-toggle="modal" id="estabelecimentoZoop">
+                    <i class="fa-solid fa-building"></i>
+                    <Span>Estabelecimento</Span>
+                </a>
+                <a class="subopcao" data-bs-toggle="modal" id="vincular">
+                    <i class="fa-solid fa-sim-card"></i>
+                    <Span>Terminal</Span>
+                </a>
+            </div>
+        </div>
+        <div class="opcao" id="opcaoUse"><i class="fa-solid fa-barcode"></i> <Span>Use</Span>
+            <div class="subopcoes">
+                <a class="subopcao" id="dashboardUse"><i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</Span></a>
+                <a class="subopcao" data-bs-toggle="modal" id="estabelecimentoUse">
+                    <i class="fa-solid fa-building"></i>
+                    <span>Estabelecimento</span>
+                </a>
+            </div>
+        </div>
+        <div class="opcao" id="opcaoUsuario"><a><i class="fa-solid fa-user-group"></i>
+                <span>Usuário</span></a></div>
+    </div>
+    <img class="logo-pax" src="/svg/logo-pax.svg" alt="Logo Pax Primavera">
+    <button class="btn-sair"><i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span></button>
+</div>

@@ -34,14 +34,42 @@ Route.get('login', async ({ view, response, auth }) => {
   }
 }).as('login')
 
-Route.get('dashboard', async ({ view, auth }) => {
+Route.get('dashboard/:tipo?', async ({ view, auth }) => {
   try {
     await auth.use('web').authenticate()
+
     return view.render('pages/home')
+
   } catch (error) {
     return view.render('pages/login')
   }
 }).as('dashboard')
+
+Route.get('estabelecimentos/:tipo?', async ({ view, auth }) => {
+  try {
+    await auth.use('web').authenticate()
+
+    return view.render('pages/estabelecimentos')
+
+  } catch (error) {
+    return view.render('pages/login')
+  }
+}).as('estabelecimentos')
+
+Route.get('usuarios', async ({ view, auth }) => {
+  try {
+    await auth.use('web').authenticate()
+
+    return view.render('pages/usuarios')
+
+  } catch (error) {
+    return view.render('pages/login')
+  }
+}).as('usuarios')
+
+Route.get('teste', async ({view}) =>{
+  return view.render('pages/teste')
+})
 
 // Api
 Route.group(() => {
@@ -58,7 +86,7 @@ Route.group(() => {
     Route.post('vincular', 'IntegracaoMeshController.vincularTerminal')
   }).prefix('mesh')
 
-  Route.group(()=>{
+  Route.group(() => {
     Route.get('transacao/:dataInicial/:dataFinal', 'IntegracaoUseController.buscarRecebimentos')
     Route.post('repasse', 'IntegracaoUseController.repasse')
   }).prefix('use')

@@ -5,13 +5,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
     <title>Gerencial Financeiro</title>
-    <link rel="stylesheet" href="style/index.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <script src="https://kit.fontawesome.com/30a0b5289d.js" crossorigin="anonymous"></script>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Righteous&family=Sarala:wght@400;700&display=swap");
+
+        * {
+            padding: 0;
+            box-sizing: border-box;
+            text-decoration: none;
+            font-family: 'Sarala'
+        }
+
+        body {
+            font-size: 80%;
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+        }
+
+        .pagina {
+            flex-direction: row;
+            height: 100vh;
+            display: flex;
+            position: relative;
+        }
+    </style>
 </head>
+
 <body>
-    
+    <div class="pagina">
+        @include('./components/menu')
+        @include('./components/modal-cadastro')
+        @include('./components/dashboard')
+    </div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const opcaoVincular = document.getElementById("vincular");
+        const opcaoEsZoop = document.getElementById("estabelecimentoZoop");
+        const opcaoEsUse = document.getElementById("estabelecimentoUse");
+        const opcaoDsZoop = document.getElementById("dashboardZoop");
+        const opcaoDsUse = document.getElementById("dashboardUse");
+        const opcaoUsuario = document.getElementById("opcaoUsuario");
+        const modalCadastro = new bootstrap.Modal(document.getElementById("modalCadastro"));
+        const tituloModal = document.querySelector('#modalCadastro .modal-title');
+        const corpoModal = document.querySelector("#modalCadastro .modal-body");
+        
+        $('.select-estabelecimento').select2({
+            placeholder: "Selecione um estabelecimento (opcional)"
+        });
+        
+        $('#cpf').inputmask('999.999.999-99', { placeholder: '___.___.___-__' });
+
+        opcaoVincular.addEventListener("click", () => {
+            const formularioSelecionado = "vincularTerminal";
+            const tituloModalSelecionado = "Vincular Terminal";
+            document.getElementById(formularioSelecionado).style.display = 'block'
+            tituloModal.textContent = tituloModalSelecionado;
+            modalCadastro.show();
+        });
+        opcaoUsuario.addEventListener("click", () => {
+            const formularioSelecionado = "cadastroUsuario";
+            const tituloModalSelecionado = "Cadastrar Usuário";
+            document.getElementById(formularioSelecionado).style.display = 'block'
+            tituloModal.textContent = tituloModalSelecionado;
+            modalCadastro.show();
+        });
+        opcaoEsUse.addEventListener("click", () => {
+            const formularioSelecionado = "cadastroEstabelecimentoUse";
+            const tituloModalSelecionado = "Cadastrar Estabalecimento USE";
+            document.getElementById(formularioSelecionado).style.display = 'block'
+            tituloModal.textContent = tituloModalSelecionado;
+            modalCadastro.show();
+        });
+        opcaoEsZoop.addEventListener("click", () => {
+            const formularioSelecionado = "cadastroEstabelecimentoZoop";
+            const tituloModalSelecionado = "Cadastrar Estabalecimento ZOOP";
+            document.getElementById(formularioSelecionado).style.display = 'block'
+            tituloModal.textContent = tituloModalSelecionado;
+            modalCadastro.show();
+        });
+        opcaoDsZoop.addEventListener("click", () => {
+            document.getElementById('relatorioUse').style.display = 'none'
+            document.getElementById('relatorioZoop').style.display = 'block'
+        });
+        opcaoDsUse.addEventListener("click", () => {
+            document.getElementById('relatorioUse').style.display = 'block'
+            document.getElementById('relatorioZoop').style.display = 'none'
+        });
+    })
+</script>
+
 </html>
