@@ -105,7 +105,7 @@
         }
     }
 
-    .select2-container {
+    .select-estabelecimento+.select2-container {
         width: 100% !important;
     }
 
@@ -114,9 +114,9 @@
         position: relative !important;
     }
 
-    .cadastrar-usuario, 
-    .vincular-terminal, 
-    .cadastrar-estabelecimento-zoop, 
+    .cadastrar-usuario,
+    .vincular-terminal,
+    .cadastrar-estabelecimento-zoop,
     .cadastrar-estabelecimento-use {
         display: none;
     }
@@ -129,10 +129,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @include('./components/vincular-terminal')
-                @include('./components/cadastro-estabelecimento-use')
-                @include('./components/cadastro-estabelecimento-zoop')
-                @include('./components/cadastro-usuario')
+                @include('components/vincular-terminal')
+                @include('components/cadastro-estabelecimento-use')
+                @include('components/cadastro-estabelecimento-zoop')
+                @include('components/cadastro-usuario')
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -151,30 +151,108 @@
 
         btnSalvar.addEventListener("click", async () => {
             try {
-                const response = { success: true };
+                const modalBody = document.querySelector('.modal-body')
+                const modalContent = modalBody.getAttribute("data-modal");
 
-                if (!response.success) throw new Error();
+                let response;
+
+                switch (modalContent) {
+                    case "cadastroEstabelecimentoZoop":
+                        response = await fetch("/api/mesh/cadastrar", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+
+                            },
+                            body: JSON.stringify({
+                                id: document.getElementById('identificadorZoop').value,
+                                nome: document.getElementById('nomeZoop').value,
+                                cnpj: document.getElementById('cnpjZoop').value,
+                                tipo: document.getElementById('tipoZoop').value,
+                            })
+                        });
+                        break;
+                    case "cadastroEstabelecimentoUse":
+                        response = await fetch("/api/use/cadastrar", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+
+                            },
+                            body: JSON.stringify({
+                                id: document.getElementById('identificadorUse').value,
+                                nome: document.getElementById('nomeUse').value,
+                                cnpj: document.getElementById('cnpjUse').value,
+                                chave: document.getElementById('chaveUse').value,
+                            })
+                        });
+                        break;
+                    case "cadastroUsuario":
+                        response = await fetch("/api/usuario/cadastrar", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+
+                            },
+                            body: JSON.stringify({
+                                nome: document.getElementById('nomeUsuario').value,
+                                cpf: document.getElementById('cpfUsuario').value,
+                                password: document.getElementById('passwordUsuario').value,
+                                tipo: document.getElementById('tipoUsuario').value,
+                                estabelecimentos: Array.from(document.querySelectorAll('.select-estabelecimento option:checked')).map(option => option.value)
+                            })
+                        });
+                        break;
+                    case "vincularTerminal":
+                        response = await fetch("/api/mesh/vincular", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+
+                            },
+                            body: JSON.stringify({
+                                serial: document.getElementById('serie').value,
+                                descricao: document.getElementById('descricao').value,
+                                tipo: document.getElementById('tipo').value
+                            })
+                        });
+                        break;
+                    default:
+                        break;
+                }
+
+                const responseData = await response.text()
+
+                if (!response.ok) {
+                    throw new Error(responseData);
+                }
+
                 alert.classList.add("alert", "alert-success", "modal-alert");
                 alert.setAttribute("role", "alert");
-                alert.innerText = "Dados salvos com sucesso!";
+
+                alert.innerText = responseData
 
                 modalAlerts.appendChild(alert);
 
                 setTimeout(() => {
                     modalAlerts.removeChild(alert);
-                    $("#modalCadastro").modal("hide");
+                    $("#myModal").modal("hide");
                 }, 2000);
             } catch (error) {
-                alert.classList.add("alert", "alert-danger", "modal-alert");
+
+                alert.classList.add("alert", "alert-danger", "modal-alert-dashboard");
                 alert.setAttribute("role", "alert");
-                alert.innerText = "Erro ao salvar dados. Por favor, tente novamente.";
+
+                const erroMensagem = JSON.parse(error.message)
+                alert.innerText = erroMensagem.message ?? "Erro ao salvar dados. Por favor, tente novamente.";
 
                 modalAlerts.appendChild(alert);
+
                 setTimeout(() => {
                     modalAlerts.removeChild(alert);
                 }, 2000);
             }
-        });   
+        });
 
         $("#modalCadastro").on("hidden.bs.modal", function () {
             $("body").removeClass("modal-open");

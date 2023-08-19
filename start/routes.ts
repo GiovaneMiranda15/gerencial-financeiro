@@ -82,12 +82,15 @@ Route.group(() => {
 
   Route.group(() => {
     Route.post('transacao/:dataInicial/:dataFinal', 'IntegracaoMeshController.buscarTransacoes')
-    Route.post('cadatrar', 'IntegracaoMeshController.cadastrar')
+    Route.post('cadastrar', 'IntegracaoMeshController.cadastrar')
+    Route.post('estabelecimentos', 'IntegracaoMeshController.buscarEstabelecimento')
     Route.post('vincular', 'IntegracaoMeshController.vincularTerminal')
   }).prefix('mesh')
 
   Route.group(() => {
-    Route.get('transacao/:dataInicial/:dataFinal', 'IntegracaoUseController.buscarRecebimentos')
+    Route.post('transacao/:dataInicial/:dataFinal', 'IntegracaoUseController.buscarRecebimentos')
+    Route.post('cadastrar', 'IntegracaoUseController.cadastrar')
+    Route.post('estabelecimentos', 'IntegracaoUseController.buscarEstabelecimento')
     Route.post('repasse', 'IntegracaoUseController.repasse')
   }).prefix('use')
 }).prefix('api')

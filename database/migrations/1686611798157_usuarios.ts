@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string('nome', 150).notNullable()
       table.string('cpf', 11).notNullable().unique()
       table.string('senha', 255).notNullable()
-      table.specificType('estabelecimento', 'varchar[]').nullable()
+      table.specificType('estabelecimentos', 'varchar[]').nullable()
       table.integer('tipo').notNullable().defaultTo(0)
       table.boolean('ativo').notNullable().defaultTo(true)
       table.string('remember_me_token').nullable()

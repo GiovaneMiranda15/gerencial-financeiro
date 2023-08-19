@@ -146,5 +146,27 @@
                 <span>Usuário</span></a></div>
     </div>
     <img class="logo-pax" src="/svg/logo-pax.svg" alt="Logo Pax Primavera">
-    <button class="btn-sair"><i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span></button>
+    <button class="btn-sair" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span></button>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const logoutButton = document.getElementById("logoutButton");
+
+        logoutButton.addEventListener("click", function () {
+
+            fetch("/api/usuario/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+
+                },
+            })
+                .then(data => {
+                    window.location.href = "/login";
+                })
+                .catch(error => {
+                    console.error("Erro ao fazer logout:", error);
+                });
+        });
+    });
+</script>

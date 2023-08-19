@@ -20,7 +20,7 @@
             padding: 0;
             box-sizing: border-box;
             text-decoration: none;
-            font-family: 'Sarala'
+            font-family: "Sarala"
         }
 
         body {
@@ -41,9 +41,9 @@
 
 <body>
     <div class="pagina">
-        @include('./components/menu')
-        @include('./components/modal-cadastro')
-        @include('./components/dashboard')
+        @include("components/menu")
+        @include("components/modal-cadastro")
+        @include("components/dashboard")
     </div>
 </body>
 <script>
@@ -55,50 +55,57 @@
         const opcaoDsUse = document.getElementById("dashboardUse");
         const opcaoUsuario = document.getElementById("opcaoUsuario");
         const modalCadastro = new bootstrap.Modal(document.getElementById("modalCadastro"));
-        const tituloModal = document.querySelector('#modalCadastro .modal-title');
+        const tituloModal = document.querySelector("#modalCadastro .modal-title");
         const corpoModal = document.querySelector("#modalCadastro .modal-body");
-        
-        $('.select-estabelecimento').select2({
-            placeholder: "Selecione um estabelecimento (opcional)"
-        });
-        
-        $('#cpf').inputmask('999.999.999-99', { placeholder: '___.___.___-__' });
+        const filtro = document.querySelector(".dashboard-title");
 
         opcaoVincular.addEventListener("click", () => {
             const formularioSelecionado = "vincularTerminal";
             const tituloModalSelecionado = "Vincular Terminal";
-            document.getElementById(formularioSelecionado).style.display = 'block'
+            document.getElementById(formularioSelecionado).style.display = "block"
             tituloModal.textContent = tituloModalSelecionado;
+            corpoModal.setAttribute("data-modal", "vincularTerminal");
             modalCadastro.show();
         });
         opcaoUsuario.addEventListener("click", () => {
             const formularioSelecionado = "cadastroUsuario";
             const tituloModalSelecionado = "Cadastrar Usuário";
-            document.getElementById(formularioSelecionado).style.display = 'block'
+            document.getElementById(formularioSelecionado).style.display = "block"
             tituloModal.textContent = tituloModalSelecionado;
+            corpoModal.setAttribute("data-modal", "cadastroUsuario");
             modalCadastro.show();
         });
         opcaoEsUse.addEventListener("click", () => {
             const formularioSelecionado = "cadastroEstabelecimentoUse";
             const tituloModalSelecionado = "Cadastrar Estabalecimento USE";
-            document.getElementById(formularioSelecionado).style.display = 'block'
+            document.getElementById(formularioSelecionado).style.display = "block"
             tituloModal.textContent = tituloModalSelecionado;
+            corpoModal.setAttribute("data-modal", "cadastroEstabelecimentoUse");
             modalCadastro.show();
         });
         opcaoEsZoop.addEventListener("click", () => {
             const formularioSelecionado = "cadastroEstabelecimentoZoop";
             const tituloModalSelecionado = "Cadastrar Estabalecimento ZOOP";
-            document.getElementById(formularioSelecionado).style.display = 'block'
+            document.getElementById(formularioSelecionado).style.display = "block"
             tituloModal.textContent = tituloModalSelecionado;
+            corpoModal.setAttribute("data-modal", "cadastroEstabelecimentoZoop");
             modalCadastro.show();
         });
         opcaoDsZoop.addEventListener("click", () => {
-            document.getElementById('relatorioUse').style.display = 'none'
-            document.getElementById('relatorioZoop').style.display = 'block'
+            filtro.innerHTML = "Dashboard Zoop"
+            filtro.setAttribute("data-dashboard", "ZOOP")
+            document.getElementById("data-inicial").value = new Date().toISOString().slice(0, 10)
+            document.getElementById("data-final").value = new Date().toISOString().slice(0, 10)
+            
+            atualizarPagina(false)
         });
         opcaoDsUse.addEventListener("click", () => {
-            document.getElementById('relatorioUse').style.display = 'block'
-            document.getElementById('relatorioZoop').style.display = 'none'
+            filtro.innerHTML = "Dashboard Use"
+            filtro.setAttribute("data-dashboard", "USE")
+            
+            document.getElementById("data-inicial").value = new Date().toISOString().slice(0, 10)
+            document.getElementById("data-final").value = new Date().toISOString().slice(0, 10)
+            atualizarPagina(false)
         });
     })
 </script>

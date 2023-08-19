@@ -1,6 +1,9 @@
 <form id="cadastroEstabelecimentoUse" class="cadastrar-estabelecimento-use" action="" method="post">
-    <input type="text" name="identificador" id="identificador" placeholder="Identificador">
-    <input type="text" name="nome" id="nome" placeholder="Nome">
-    <input type="text" name="cnpj" id="cnpj" placeholder="Cnpj">
-    <input type="text" name="chave" id="chave" placeholder="Chave">
+    <input type="text" name="identificador" id="identificadorUse" placeholder="Identificador">
+    <input type="text" name="nome" id="nomeUse" placeholder="Nome">
+    <input type="text" name="cnpj" id="cnpjUse" placeholder="Cnpj">
+    <input type="text" name="chave" id="chaveUse" placeholder="Chave">
 </form>
+<script>
+    $('#cnpjUse').inputmask('99.999.999/9999-99', { placeholder: '__.___.___/____-__' });
+</script>

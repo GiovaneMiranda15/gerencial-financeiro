@@ -18,7 +18,7 @@ export default class Usuario extends BaseModel {
   public password: string
 
   @column()
-  public estabelecimento: string[] | null;
+  public estabelecimentos: string[] | null;
 
   @column()
   public tipo: number;

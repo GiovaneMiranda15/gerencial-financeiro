@@ -10,10 +10,11 @@ export default class UsuarioController {
 
             const dados = await request.validate({
                 schema: schema.create({
+                    nome:schema.string(),
                     cpf: schema.string(),
                     password: schema.string(),
                     tipo: schema.number(),
-                    estabelecimento: schema.array().members(
+                    estabelecimentos: schema.array().members(
                         schema.string()
                     )
                 })
@@ -71,7 +72,7 @@ export default class UsuarioController {
     public async logout({ response, auth }) {
         try {
             await auth.use('web').logout()
-            return response.redirect().toRoute('login')
+            return response.status(200).send("Usuário deslogado com sucesso!")
         } catch (error) {
             handleErrorResponse(response, error)
         }

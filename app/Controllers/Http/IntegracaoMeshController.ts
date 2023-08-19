@@ -40,12 +40,25 @@ export default class UsersController {
 
                 const result = await api(options)
 
-                if (!result.id) return 'Terminal não localizado'
+                if (!result.id) return 'TERMINAL NÃO LOCALIZADO'
 
                 return result.serial_number
             }
         } else {
-            return 'Terminal não localizado'
+            return 'TERMINAL NÃO LOCALIZADO'
+        }
+    }
+
+    public buscarEstabelecimento = async({ response, auth}) =>{
+        try {
+            await auth.use('web').authenticate()
+
+            const estabelecimentos = await EstabelecimentosMesh.query()
+
+            return response.status(200).send(estabelecimentos)
+
+        } catch (error) {
+            handleErrorResponse(response, error)
         }
     }
 
@@ -57,7 +70,7 @@ export default class UsersController {
                 schema: schema.create({
                     id: schema.string(),
                     nome: schema.string(),
-                    cnpj: schema.number(),
+                    cnpj: schema.string(),
                     tipo: schema.number()
                 })
             })
@@ -97,7 +110,7 @@ export default class UsersController {
 
             const result = await api(options)
 
-            if (!result) throw new Error("Terminal não encontrado");
+            if (!result || result.response?.status == 404) throw new Error("Terminal não encontrado");
 
             await Terminal.updateOrCreate({ id: result.id }, { id: result.id, serial: result.serial_number, descricao: dados.descricao, tipo: dados.tipo })
 
@@ -111,7 +124,6 @@ export default class UsersController {
         try {
             await auth.use('web').authenticate()
             const usuario = await auth.use('web').user
-
             let estabelecimentos = await Database.query()
                 .select([
                     'em.*', 'i.chave', 'i.identificador'
@@ -119,8 +131,8 @@ export default class UsersController {
                 .from('estabelecimentos_mesh as em')
                 .leftJoin('integracao as i', 'i.tipo', 'em.tipo')
                 .where((query) => {
-                    if (usuario.estabelecimento !== null)
-                        query.whereIn('em.id', usuario.estabelecimento)
+                    if (usuario.estabelecimentos !== null)
+                        query.whereIn('em.id', usuario.estabelecimentos)
                 })
                 .orderBy('em.nome', 'asc')
 
@@ -143,15 +155,17 @@ export default class UsersController {
                         saldo: transacoes.reduce((total, item) => total + (parseFloat(item.amount) - parseFloat(item.fees)), 0).toFixed(2),
                         transacoes: await Promise.all(
                             transacoes.map(async (transacao) => {
+                                console.log(transacao)
                                 const descricaoTerminal = await this.buscarTerminal(transacao, item);
                                 return {
                                     id: transacao.id,
                                     total: transacao.amount,
                                     forma_pagamento: (this.tipoPagamento(transacao.payment_type)),
-                                    primeiros_digitos: transacao.payment_method.first4_digits,
-                                    ultimos_digitos: transacao.payment_method.last4_digits,
+                                    cliente: transacao.payment_method.holder_name ?? '',
+                                    primeiros_digitos: transacao.payment_method.first4_digits ?? '0000',
+                                    ultimos_digitos: transacao.payment_method.last4_digits ?? '0000',
                                     data: moment(transacao.updated_at).format('DD/MM/YYYY'),
-                                    hora: moment(transacao.updated_at).format('HH:mm:ss'),
+                                    hora: moment(transacao.updated_at).format('HH:mm'),
                                     terminal: descricaoTerminal,
                                     taxa: transacao.fees
                                 };
@@ -196,4 +210,5 @@ export default class UsersController {
 
         return transacoes
     }
+
 }
