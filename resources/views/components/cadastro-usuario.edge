@@ -1,53 +1,11 @@
-<form id="cadastroUsuario" class="cadastrar-usuario" action="" method="post">
-    <input type="text" name="nome" id="nomeUsuario" placeholder="Nome">
-    <input type="username" name="cpf" id="cpfUsuario" placeholder="CPF">
-    <input type="current-password" name="password" id="passwordUsuario" placeholder="password">
-    <select class="" name="tipo" id="tipoUsuario">
+<form id="cadastro-usuario" class="cadastrar-usuario" action="" method="post">
+    <input type="text" name="nome" id="nome-usuario" placeholder="Nome">
+    <input type="username" name="cpf" id="cpf-usuario" placeholder="CPF">
+    <input type="current-password" name="password" id="password-usuario" placeholder="password">
+    <select class="" name="tipo" id="tipo-usuario">
         <option value="" disabled selected>Selecione uma permissão</option>
         <option value="0">ADMINISTRADOR</option>
         <option value="1">FILIAL</option>
     </select>
     <select class="select-estabelecimento" name="estabelecimentos[]" multiple="multiple"></select>
 </form>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
-<script>
-    $('#cpfUsuario').inputmask('999.999.999-99', { placeholder: '___.___.___-__' });
-
-    async function fetchEstabelecimentos() {
-        try {
-            const response = await fetch('/api/mesh/estabelecimentos', {
-                method: 'POST',
-            });
-
-            if (!response.ok) {
-                throw new Error('Erro na requisição');
-            }
-
-            const estabelecimentos = await response.json();
-            return estabelecimentos;
-        } catch (error) {
-            console.error('Erro ao buscar estabelecimentos:', error);
-            return [];
-        }
-    }
-
-    async function populateEstabelecimentosSelect() {
-        const estabelecimentos = await fetchEstabelecimentos();
-        const selectElement = document.querySelector('.select-estabelecimento');
-
-        estabelecimentos.forEach(estabelecimento => {
-            const option = document.createElement('option');
-            option.value = estabelecimento.id;
-            option.text = `${estabelecimento.nome} - CNPJ: ${estabelecimento.cnpj}`;
-            selectElement.appendChild(option);
-        });
-
-        $('.select-estabelecimento').select2({
-            placeholder: "Selecione um estabelecimento (opcional)"
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", populateEstabelecimentosSelect);
-</script>

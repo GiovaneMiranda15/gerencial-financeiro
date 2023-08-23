@@ -1,16 +1,19 @@
-import { schema } from '@ioc:Adonis/Core/Validator'
-import Usuario from 'App/Models/Usuario'
-import { handleErrorResponse } from 'App/Utils/HandleErrorResponse'
+import { schema } from "@ioc:Adonis/Core/Validator"
+import Usuario from "App/Models/Usuario"
+import { handleErrorResponse } from "App/Utils/HandleErrorResponse"
 
 export default class UsuarioController {
 
+    // Função para cadastrar o usuário!
     public async cadastrar({ request, response, auth }) {
         try {
-            await auth.use('web').authenticate()
+            // Verifica  se usuário está autenticado!
+            await auth.use("web").authenticate()
 
+            // Valida os dados informados!
             const dados = await request.validate({
                 schema: schema.create({
-                    nome:schema.string(),
+                    nome: schema.string(),
                     cpf: schema.string(),
                     password: schema.string(),
                     tipo: schema.number(),
@@ -20,36 +23,24 @@ export default class UsuarioController {
                 })
             })
 
-            dados.cpf = dados.cpf.replace(/[^0-9]/g, '')
 
+            dados.cpf = dados.cpf.replace(/[^0-9]/g, "")
+
+            // Atualiza ou insere o usuário de acordo com o cpf informado!
             await Usuario.updateOrCreate({ cpf: dados.cpf }, dados)
 
-            return response.status(201).send('Usuário inserido com sucesso')
-
+            // Retorna mensagem de sucesso!
+            return response.status(201).send({ status: true, mensagem: "Usuário inserido com sucesso" })
         } catch (error) {
+            // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
         }
     }
 
-    public async ativar({ response, params, auth }) {
-        try {
-            await auth.use('web').authenticate()
-
-            const usuario = await Usuario.findOrFail(params.id)
-
-            usuario.merge({ ativo: !usuario.ativo })
-
-            await usuario.save()
-
-            return response.status(201).send('Usuário atualizado com sucesso')
-
-        } catch (error) {
-            handleErrorResponse(response, error)
-        }
-    }
-
+    // Função para login!
     public async login({ request, response, auth }) {
         try {
+            // Valida os dados informados!
             const dados = await request.validate({
                 schema: schema.create({
                     cpf: schema.string(),
@@ -59,21 +50,27 @@ export default class UsuarioController {
 
             const { cpf, senha } = dados
 
-            
-            await auth.use('web').attempt(cpf.replace(/[.-]/g, ''), senha)
+            // Autentica se o mesmo possui cadastro
+            await auth.use("web").attempt(cpf.replace(/[.-]/g, ""), senha)
 
-            return response.redirect().toRoute('dashboard')
-
+            // Retorna mensagem de sucesso!
+            return response.status(200).send({ status: true, mensagem: "Usuário logado com sucesso!" })
         } catch (error) {
+            // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
         }
     }
 
+    // Função para logout!
     public async logout({ response, auth }) {
         try {
-            await auth.use('web').logout()
-            return response.status(200).send("Usuário deslogado com sucesso!")
+            // Realiza o logout!
+            await auth.use("web").logout()
+
+            // Retorna mensagem de sucesso!
+            return response.status(200).send({ status: true, mensagem: "Usuário deslogado com sucesso!" })
         } catch (error) {
+            // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
         }
     }

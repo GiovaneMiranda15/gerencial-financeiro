@@ -1,8 +1,9 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeSave, column } from "@ioc:Adonis/Lucid/Orm"
+import { formatString } from "App/Utils/Format"
+import { DateTime } from "luxon"
 
 export default class Terminal extends BaseModel {
-  static table = 'terminal'
+  static table = "terminal"
 
   @column({ isPrimary: true })
   public id: string
@@ -11,7 +12,7 @@ export default class Terminal extends BaseModel {
   public serial: string
 
   @column()
-  public descricao: string
+  public descricao: string | null
 
   @column()
   public tipo: number
@@ -21,4 +22,9 @@ export default class Terminal extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @beforeSave()
+  public static async format(estabelecimento: Terminal) {
+    estabelecimento.descricao = formatString(estabelecimento.descricao)
+  }
 }

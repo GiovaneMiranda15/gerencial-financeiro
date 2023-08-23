@@ -13,84 +13,57 @@
 |
 | and then import them inside `start/routes.ts` as follows
 |
-| import './routes/cart'
-| import './routes/customer''
+| import "./routes/cart"
+| import "./routes/customer"
 |
 */
 
-import Route from '@ioc:Adonis/Core/Route'
+import Route from "@ioc:Adonis/Core/Route"
 
 // Views
-Route.get('/', async ({ response }) => {
-  return response.redirect('login')
+Route.get("/", async ({ response }) => {
+  return response.redirect("login")
 })
 
-Route.get('login', async ({ view, response, auth }) => {
+Route.get("login", async ({ view, response, auth }) => {
   try {
-    await auth.use('web').authenticate()
-    response.redirect('dashboard')
+    await auth.use("web").authenticate()
+    response.redirect("dashboard")
   } catch (error) {
-    return view.render('pages/login')
+    return view.render("pages/login")
   }
-}).as('login')
+}).as("login")
 
-Route.get('dashboard/:tipo?', async ({ view, auth }) => {
+Route.get("dashboard", async ({ view, auth }) => {
   try {
-    await auth.use('web').authenticate()
+    await auth.use("web").authenticate()
 
-    return view.render('pages/home')
-
-  } catch (error) {
-    return view.render('pages/login')
-  }
-}).as('dashboard')
-
-Route.get('estabelecimentos/:tipo?', async ({ view, auth }) => {
-  try {
-    await auth.use('web').authenticate()
-
-    return view.render('pages/estabelecimentos')
+    return view.render("pages/home")
 
   } catch (error) {
-    return view.render('pages/login')
+    return view.render("pages/login")
   }
-}).as('estabelecimentos')
-
-Route.get('usuarios', async ({ view, auth }) => {
-  try {
-    await auth.use('web').authenticate()
-
-    return view.render('pages/usuarios')
-
-  } catch (error) {
-    return view.render('pages/login')
-  }
-}).as('usuarios')
-
-Route.get('teste', async ({view}) =>{
-  return view.render('pages/teste')
-})
+}).as("dashboard")
 
 // Api
 Route.group(() => {
   Route.group(() => {
-    Route.post('logout', 'UsuarioController.logout')
-    Route.post('login', 'UsuarioController.login')
-    Route.post('cadastrar', 'UsuarioController.cadastrar')
-    Route.post('ativar/:id', 'UsuarioController.cadastrar').where('id', Route.matchers.number())
-  }).prefix('usuario')
+    Route.post("logout", "UsuarioController.logout")
+    Route.post("login", "UsuarioController.login")
+    Route.post("cadastrar", "UsuarioController.cadastrar")
+  }).prefix("usuario")
 
   Route.group(() => {
-    Route.post('transacao/:dataInicial/:dataFinal', 'IntegracaoMeshController.buscarTransacoes')
-    Route.post('cadastrar', 'IntegracaoMeshController.cadastrar')
-    Route.post('estabelecimentos', 'IntegracaoMeshController.buscarEstabelecimento')
-    Route.post('vincular', 'IntegracaoMeshController.vincularTerminal')
-  }).prefix('mesh')
+    Route.post("transacao/:dataInicial/:dataFinal", "IntegracaoMeshController.buscarTransacoes")
+    Route.post("cadastrar", "IntegracaoMeshController.cadastrar")
+    Route.post("estabelecimentos", "IntegracaoMeshController.buscarEstabelecimento")
+    Route.post("vincular", "IntegracaoMeshController.vincularTerminal")
+  }).prefix("mesh")
 
   Route.group(() => {
-    Route.post('transacao/:dataInicial/:dataFinal', 'IntegracaoUseController.buscarRecebimentos')
-    Route.post('cadastrar', 'IntegracaoUseController.cadastrar')
-    Route.post('estabelecimentos', 'IntegracaoUseController.buscarEstabelecimento')
-    Route.post('repasse', 'IntegracaoUseController.repasse')
-  }).prefix('use')
-}).prefix('api')
+    Route.post("transacao/:dataInicial/:dataFinal", "IntegracaoUseController.buscarRecebimentos")
+    Route.post("cadastrar", "IntegracaoUseController.cadastrar")
+    Route.post("estabelecimentos", "IntegracaoUseController.buscarEstabelecimento")
+    Route.post("repasse/:identificador", "IntegracaoUseController.repasse")
+  }).prefix("use")
+}).prefix("api")

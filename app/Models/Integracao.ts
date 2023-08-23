@@ -1,8 +1,8 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from "luxon"
+import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm"
 
 export default class Integracao extends BaseModel {
-  static table = 'integracao'
+  static table = "integracao"
 
   @column({ isPrimary: true })
   public id: number

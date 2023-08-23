@@ -3,9 +3,9 @@ import Usuario from 'App/Models/Usuario'
 const dados = {
   nome: 'Administrador',
   cpf: '000.000.000-00',
-  password: '123789',
+  password: '123',
   estabelecimento: null,
-  tipo: 0,
+  tipo: 0
 }
 
 export default class extends BaseSeeder {

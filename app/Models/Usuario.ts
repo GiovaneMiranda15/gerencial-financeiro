@@ -1,20 +1,21 @@
-import Hash from '@ioc:Adonis/Core/Hash'
-import { BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
-import { DateTime } from 'luxon'
+import Hash from "@ioc:Adonis/Core/Hash"
+import { BaseModel, beforeSave, column } from "@ioc:Adonis/Lucid/Orm"
+import { formatString } from "App/Utils/Format"
+import { DateTime } from "luxon"
 
 export default class Usuario extends BaseModel {
-  static table = 'usuario'
+  static table = "usuario"
 
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public nome: string
+  public nome: string | null
 
   @column()
   public cpf: string
 
-  @column({ serializeAs: null, columnName: 'senha' })
+  @column({ serializeAs: null, columnName: "senha" })
   public password: string
 
   @column()
@@ -37,7 +38,8 @@ export default class Usuario extends BaseModel {
 
   @beforeSave()
   public static async hashPassword(usuario: Usuario) {
-    usuario.cpf = usuario.cpf.replace(/[^0-9]/g, '')
+    usuario.cpf = usuario.cpf.replace(/[^0-9]/g, "")
+    usuario.nome = formatString(usuario.nome)
     if (usuario.$dirty.password) {
       usuario.password = await Hash.make(usuario.password)
     }

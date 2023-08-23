@@ -1,14 +1,32 @@
-import { schema } from '@ioc:Adonis/Core/Validator'
+import { schema } from "@ioc:Adonis/Core/Validator";
 import EstabelecimentosUse from "App/Models/EstabelecimentoUse";
 import api from "App/Utils/Api";
 import { handleErrorResponse } from "App/Utils/HandleErrorResponse";
 
 export default class IntegracaoUseController {
 
+    
+    // Função para definir od tipos de pagamento! 
+    private tipoPagamento = (tipo: any, cobranca:any) => {
+        switch (true) {
+            case (cobranca == 'BOLETO_PIX' && tipo == 'PIX'):
+                return "QRCODE BOLETO"
+            case (cobranca == 'BOLETO_PIX' && tipo == 'BOLETO'):
+                return "BOLETO"
+            case (cobranca == 'PIX_AVULSO' && tipo == 'PIX'):
+                return "PIX"
+            default:
+                return "OUTROS"
+        }
+    }
+
+    // Função para cadastrar estabelecimento use!
     public async cadastrar({ request, response, auth }) {
         try {
-            await auth.use('web').authenticate()
+            // Valida se usuário está autenticado!
+            await auth.use("web").authenticate()
 
+            // Valida os dados informados!
             const dados = await request.validate({
                 schema: schema.create({
                     id: schema.string(),
@@ -18,55 +36,69 @@ export default class IntegracaoUseController {
                 })
             })
 
+            // Atualiza ou insere o estabalecimento de acordo com seu id!
             await EstabelecimentosUse.updateOrCreate({ id: dados.id }, dados)
 
-            return response.status(201).send('Estabelecimento inserido com sucesso')
+            // Retorna mensagem de sucesso!
+            return response.status(201).send({ status: true, mensagem: "Estabelecimento inserido com sucesso" })
 
         } catch (error) {
+            // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
         }
     }
 
+    // Função para buscar estabelecimentos use!
     public buscarEstabelecimento = async ({ response, auth }) => {
         try {
-            await auth.use('web').authenticate()
+            // Verifica se usuário está autenticado!
+            await auth.use("web").authenticate()
 
+            // Busca os estabelecimentos!
             const estabelecimentos = await EstabelecimentosUse.query()
 
-            return response.status(200).send(estabelecimentos)
+            // Retorna mensagem de sucesso!
+            return response.status(200).send({ status: true, mensagem: "Estabelecimentos retornados com sucesso", dados: estabelecimentos })
 
         } catch (error) {
+            // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
         }
     }
 
+    // Função para buscar transações!
     public async buscarRecebimentos({ response, params, auth }) {
         try {
-            await auth.use('web').authenticate()
+            // Verifica se usuário está autenticado!
+            await auth.use("web").authenticate()
 
-            const estabelecimentos = await EstabelecimentosUse.query().orderBy('nome', 'asc')
+            // Busca os estabelecimentos use!
+            const estabelecimentos = await EstabelecimentosUse.query().orderBy("nome", "asc")
 
-            // Variável para armazenar os dados
+            // Variável para armazenar os dados!
             const dados: any[] = [];
 
-            // Loop pelos estabelecimentos
+            // Loop pelos estabelecimentos!
             for (const item of estabelecimentos) {
+                // Chama função para consultar os recebimentos!
                 const recebimentos = await this.consultarRecebimentos(item, params);
+                // Chama a função para consultar o saldo do estabelecimento!
                 const saldo_final = await this.consultarSaldo(item);
 
-                // Função para criar o array de transações
+                // Função para criar o array de transações!
                 const criarArrayTransacoes = async (recebimentos: any[]) => {
                     const transacoes: any[] = [];
 
                     for (const itemRecebimento of recebimentos) {
                         for (const pagamento of itemRecebimento.pagamentos) {
+                            console.log(itemRecebimento.tipo_cobranca+"/"+pagamento.origem_pagamento)
                             transacoes.push({
                                 cliente: itemRecebimento.sacado_razao,
                                 valor_boleto: itemRecebimento.valor_cobranca,
                                 pedido: itemRecebimento.pedido_numero,
                                 observacao: itemRecebimento.observacao,
                                 origem: itemRecebimento.tipo_cobranca,
-                                forma_pagamento: pagamento.origem_pagamento,
+                                forma_pagamento:  (this.tipoPagamento(pagamento.origem_pagamento, itemRecebimento.tipo_cobranca)), // Chama a função para retornar o tipo de pagamento!
                                 data_documento: itemRecebimento.data_documento,
                                 data_vencimento: itemRecebimento.data_vencimento,
                                 data_pagamento: pagamento.data_quitacao,
@@ -79,8 +111,9 @@ export default class IntegracaoUseController {
                     return transacoes;
                 };
 
-                // Montagem dos dados
+                // Montagem dos dados!
                 dados.push({
+                    id: item.id,
                     estabelecimento: item.nome,
                     cnpj: item.cnpj,
                     saldo: {
@@ -93,23 +126,25 @@ export default class IntegracaoUseController {
                 });
             }
 
-
-            return response.status(200).send(dados)
+            // Retorna mensagem de sucesso!
+            return response.status(200).send({ status: true, mensagem: "Transações retornadas com sucesso", dados: dados })
         } catch (error) {
+            // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
         }
     }
 
+    // Função para consultar os recebimentos de acordo com o estabelecimento!
     private async consultarRecebimentos(item: any, params: any) {
         try {
             const { dataInicial, dataFinal } = params
             const options = {
-                method: 'post',
+                method: "post",
                 maxBodyLength: Infinity,
                 url: `https://api.useboletos.com.br/credenciados/v1/${item.id}/cobrancas-pagas`,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Credenciado-Chave': item.chave
+                    "Content-Type": "application/json",
+                    "X-Credenciado-Chave": item.chave
                 },
                 params: {
                     data_inicio: dataInicial,
@@ -117,6 +152,7 @@ export default class IntegracaoUseController {
                 }
             }
 
+            // Chama a requisição de acordo com a integração!
             const result = await api(options)
 
             return result
@@ -126,19 +162,22 @@ export default class IntegracaoUseController {
         }
     }
 
+    // Função para consultar o saldo do estabelecimento!
     private async consultarSaldo(item: any) {
         try {
             const options = {
-                method: 'get',
+                method: "get",
                 maxBodyLength: Infinity,
                 url: `https://api.useboletos.com.br/credenciados/v1/${item.id}/saldo`,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Credenciado-Chave': item.chave
+                    "Content-Type": "application/json",
+                    "X-Credenciado-Chave": item.chave
                 }
             }
 
+            // Chama a requisição de acordo com a integração!
             const result = await api(options)
+
             return result.saldo_atual
 
         } catch (error) {
@@ -146,31 +185,37 @@ export default class IntegracaoUseController {
         }
     }
 
-    public async repasse({ request, response, auth }) {
+    // Função para solicitar o repasse do estabelecimento! 
+    public async repasse({ response, params, auth }) {
         try {
-            await auth.use('web').authenticate();
-            const estabelecimento = await EstabelecimentosUse.query().where('cnpj', request.requestBody.cnpj).first()
+            // Verifica  se usuário está autenticado!
+            await auth.use("web").authenticate();
+
+            // Busca o estabelecimento informado!
+            const estabelecimento = await EstabelecimentosUse.query().where("id", params.identificador).first()
 
             if (estabelecimento) {
                 const options = {
-                    method: 'post',
+                    method: "post",
                     maxBodyLength: Infinity,
                     url: `https://api.useboletos.com.br/credenciados/v1/${estabelecimento.id}/repasse`,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-Credenciado-Chave': estabelecimento.chave
+                        "Content-Type": "application/json",
+                        "X-Credenciado-Chave": estabelecimento.chave
                     },
                 }
-                return await api(options).then(() => {
-                    return response.status(200).send({ message: "Repasse solicitado" })
-                }).catch(() => {
-                    return response.status(400).send({ message: "Não foi possivel realizar o repasse" })
-                })
 
+                // Chama a requisição de acordo com a integração!
+                return await api(options).then(() => {
+                    return response.status(200).send({ status: true, mensagem: "Repasse solicitado" })
+                }).catch(() => {
+                    return response.status(400).send({ status: false, mensagem: "Não foi possivel realizar o repasse" })
+                })
             } else {
-                return response.status(404).send({ message: "Estabelecimento não encontrado" })
+                return response.status(404).send({ status: false, mensagem: "Estabelecimento não encontrado" })
             }
         } catch (error) {
+            // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
         }
     }
