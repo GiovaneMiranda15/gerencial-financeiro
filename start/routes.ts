@@ -20,7 +20,6 @@
 
 import Route from "@ioc:Adonis/Core/Route"
 
-// Views
 Route.get("/", async ({ response }) => {
   return response.redirect("login")
 })

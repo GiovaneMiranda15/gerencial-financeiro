@@ -32,6 +32,7 @@ export default class UsuarioController {
             // Retorna mensagem de sucesso!
             return response.status(201).send({ status: true, mensagem: "Usuário inserido com sucesso" })
         } catch (error) {
+            console.log(error)
             // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
         }

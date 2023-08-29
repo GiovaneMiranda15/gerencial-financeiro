@@ -1,16 +1,18 @@
+/* Import de fontes */
 @import url("https://fonts.googleapis.com/css2?family=Righteous&family=Sarala:wght@400;700&display=swap");
 
-/* Estilo global */
+/* Reset de estilos e fonte padrão */
 * {
+    margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Sarala", Arial, sans-serif;
     text-decoration: none;
-    font-family: "Sarala"
 }
 
+/* Estilo global */
 body {
     background-color: #f5f5f5;
-    font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -22,13 +24,12 @@ body {
 /* Estilo tela de login */
 .login-container {
     background-color: #fff;
-    border-radius: 1.0rem;
-    box-shadow: 0rem 0.5rem 1rem rgba(0, 0, 0, 0.3);
-    padding: 2.0rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+    padding: 2rem;
     width: 25%;
-    height: 35vh
+    min-height: 20rem;
 }
-
 
 .login-container h2 {
     font-size: 2rem;
@@ -42,15 +43,11 @@ body {
     gap: 1.5rem;
 }
 
-.login-form input {
+.login-form input[type="text"],
+.login-form input[type="password"] {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 0.5rem;
-}
-
-.login-form input[type="text"],
-.login-form input[type="password"] {
-    width: 100%;
 }
 
 .login-form input[type="submit"] {
@@ -60,12 +57,12 @@ body {
     color: white;
     cursor: pointer;
     padding: 0.5rem;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, font-weight 0.3s;
 }
 
 .login-form input[type="submit"]:hover {
     background-color: #094723;
-    font-weight: bold
+    font-weight: bold;
 }
 
 .login-modal-alerts {
@@ -73,12 +70,36 @@ body {
     top: 5vh;
     right: 2rem;
     z-index: 1050;
-    font-family: "Sarala"
 }
 
 .login-modal-alert {
     width: 100%;
     margin-bottom: 2rem;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .login-container {
+        width: 40%;
+    }
+}
+
+@media (max-width: 992px) {
+    .login-container {
+        width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        width: 60%;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-container {
+        width: 80%;
+    }
 }
 
 /* Estilo tela principal */
@@ -96,7 +117,7 @@ body {
 }
 
 .menu a:hover {
-   color: white;
+    color: white;
 }
 
 .menu {
@@ -110,7 +131,7 @@ body {
     background-color: #0f6b35;
     color: white;
     align-items: center;
-    font-size: 16px
+    font-size: 1.0rem
 }
 
 .navegacao {
@@ -331,72 +352,72 @@ body {
 }
 
 
-    .dashboard-container {
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 1px 4px 20px rgba(0, 0, 0, 0.301);
-        margin: 20px auto;
-        padding: 20px;
-        width: 85%;
-    }
+.dashboard-container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 1px 4px 20px rgba(0, 0, 0, 0.301);
+    margin: 20px auto;
+    padding: 20px;
+    width: 85%;
+}
 
-    .dashboard-title {
-        margin-bottom: 20px;
-    }
+.dashboard-title {
+    margin-bottom: 20px;
+}
 
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
 
-    .date-form {
-        display: flex;
-        gap: 10px;
-    }
+.date-form {
+    display: flex;
+    gap: 10px;
+}
 
-    .filter-button {
-        background-color: #0f6b35;
-        border: none;
-        border-radius: 5px;
-        color: white;
-        cursor: pointer;
-        padding: 8px 15px;
-        transition: background-color 0.3s;
-    }
+.filter-button {
+    background-color: #0f6b35;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    padding: 8px 15px;
+    transition: background-color 0.3s;
+}
 
-    .filter-button:hover {
-        background-color: #094723;
-    }
+.filter-button:hover {
+    background-color: #094723;
+}
 
-    #view-all,
-    #view-detailed {
-        background-color: #0f6b35;
-        border: none;
-        border-radius: 5px;
-        color: white;
-        cursor: pointer;
-        padding: 8px 15px;
-        transition: background-color 0.3s;
-    }
+#view-all,
+#view-detailed {
+    background-color: #0f6b35;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    padding: 8px 15px;
+    transition: background-color 0.3s;
+}
 
-    #view-all:hover,
-    #view-detailed:hover {
-        background-color: #094723;
-    }
+#view-all:hover,
+#view-detailed:hover {
+    background-color: #094723;
+}
 
-    .active-view {
-        background-color: #094723 !important;
-    }
+.active-view {
+    background-color: #094723 !important;
+}
 
-    .scrollable-table {
-        display: flex;
-        flex-direction: column;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        margin-top: 10px;
-    }
+.scrollable-table {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+}
 
 /* Adicione uma classe para estilizar o scrollbar */
 .scrollable-table {
@@ -459,120 +480,135 @@ body {
 }
 
 
-    .print-button {
-        background-color: #6c757d;
-        color: white;
-        cursor: pointer;
-        border: none;
-        border-radius: 5px;
-        padding: 8px 15px;
-        transition: background-color 0.3s;
+.print-button {
+    background-color: #6c757d;
+    color: white;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    transition: background-color 0.3s;
+}
+
+.print-button:hover {
+    background-color: #5a6268;
+}
+
+
+.repasse-button,
+.comprovante-button {
+    background-color: #6c757d;
+    color: white;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: black 1px 1px 1px;
+    transition: background-color 0.3s;
+}
+
+.repasse-button:hover,
+.comprovante-button:hover {
+    background-color: #5a6268;
+}
+
+.modal-alerts-dashboard {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    z-index: 1050;
+    font-family: 'Sarala'
+}
+
+.modal-alert-dashboard {
+    width: 300px;
+    margin-bottom: 50px;
+}
+
+@media screen and (max-width: 768px) {
+    .dashboard-container {
+        width: 90%;
+    }
+}
+
+.loading-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.spinner {
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #333;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
     }
 
-    .print-button:hover {
-        background-color: #5a6268;
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.custom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    text-align: center;
+}
+
+.custom-modal button {
+    margin: 10px;
+    padding: 5px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+@media (max-width: 1400px) {
+    .menu {
+        font-size: 0.8rem;
+        width: 15%;
     }
 
-
-    .repasse-button,
-    .comprovante-button {
-        background-color: #6c757d;
-        color: white;
-        cursor: pointer;
-        border: none;
-        border-radius: 5px;
-        padding: 5px;
-        box-shadow: black 1px 1px 1px;
-        transition: background-color 0.3s;
+    .dashboard-container {
+        width: 80%;
     }
 
-    .repasse-button:hover,
-    .comprovante-button:hover {
-        background-color: #5a6268;
+    .info-usuario {
+        font-size: 1.0rem;
     }
-
-    .modal-alerts-dashboard {
-        position: fixed;
-        bottom: 50px;
-        right: 50px;
-        z-index: 1050;
-        font-family: 'Sarala'
-    }
-
-    .modal-alert-dashboard {
-        width: 300px;
-        margin-bottom: 50px;
-    }
-
-    @media screen and (max-width: 768px) {
-        .dashboard-container {
-            width: 90%;
-        }
-    }
-
-    .loading-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .loading-modal-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 5px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .spinner {
-        border: 5px solid rgba(0, 0, 0, 0.1);
-        border-top: 5px solid #333;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: spin 1s linear infinite;
-        margin-bottom: 10px;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .custom-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content {
-        text-align: center;
-    }
-
-    .custom-modal button {
-        margin: 10px;
-        padding: 5px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+}

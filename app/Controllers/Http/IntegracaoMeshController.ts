@@ -9,38 +9,45 @@ import moment from "moment"
 
 export default class UsersController {
 
-    // Função para definir od tipos de pagamento! 
-    private tipoPagamento = (tipo: any) => {
-        switch (tipo) {
-            case "debit":
-                return "DÉBITO"
-            case "credit":
-                return "CRÉDITO"
-            case "pix":
-                return "PIX"
-            default:
-                return "OUTROS"
-        }
-    }
+    /**
+     * Função para definir os tipos de pagamento! 
+     * @param tipo 
+     * @returns
+     */
+    private tipoPagamento = (tipo: string | number) => {
+        const tiposPagamento = {
+            debit: "DÉBITO",
+            credit: "CRÉDITO",
+            pix: "PIX",
+            default: "OUTROS"
+        };
 
-    // Função para buscar o terminal retornado nas transações!
-    private buscarTerminal = async (transacao: any, item: any) => {
-        // Verifica se a transação possui terminal!
-        if (transacao.point_of_sale.identification_number != null) {
-            // Busca se o terminal existe no banco!
-            const terminal = await Terminal.query().whereILike("id", `${transacao.point_of_sale.identification_number}`).first()
+        return tiposPagamento[tipo] || tiposPagamento.default;
+    };
+
+
+    /**
+     * Função para buscar o terminal retornado nas transações! 
+     * @param transacao 
+     * @param api 
+     * @param terminais 
+     * @returns 
+     */
+    private buscarTerminal = async (transacao: any, integracao: any, terminais: any) => {
+        if (transacao.point_of_sale.identification_number != null) { // Verifica se a transação possui terminal!
+            const terminal = terminais.find((item: { id: any }) => item.id == transacao.point_of_sale.identification_number) // Busca se o terminal existe no banco!
+
             if (terminal) {
                 // Retorna a descrição do terminal ou seu numero serial!
                 return (terminal.descricao == "" || terminal.descricao == null) ? terminal.serial : terminal.descricao
             } else {
-
                 const options = {
                     method: "get",
                     maxBodyLength: Infinity,
                     url: `https://api.zoop.ws/v1/card-present/terminals/${transacao.point_of_sale.identification_number}`,
                     headers: {
                         accept: "application/json",
-                        authorization: "Basic " + item.chave
+                        authorization: "Basic " + integracao.chave
                     }
                 }
 
@@ -53,6 +60,7 @@ export default class UsersController {
                 // Retorna o serial do terminal!
                 return result.serial_number
             }
+
         } else {
             // Retorna caso a transação não possua terminal!
             return "TERMINAL NÃO LOCALIZADO"
@@ -143,7 +151,7 @@ export default class UsersController {
 
             // Retorna mensagem de sucesso!
             return response.status(201).send({ status: true, mensagem: "Terminal vinculado com sucesso!" })
-            
+
         } catch (error) {
             // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
@@ -155,10 +163,12 @@ export default class UsersController {
         try {
             // Verifica se usuário está autenticado!
             await auth.use("web").authenticate()
-            
+
             // Pega os dados do usuário autenticado!
             const usuario = await auth.use("web").user
-            
+
+            const terminal = await Terminal.query()
+
             // Busca o estabelecimento e suas respectivas chaves de acesso!
             let estabelecimentos = await Database.query()
                 .select([
@@ -182,6 +192,9 @@ export default class UsersController {
                 // Chama a função de consulta para as transações do estabelecimento!
                 const transacoes = await this.consultarTransacoes(date_range_gte_formatado, date_range_lte_formatado, item)
 
+                // Chama a função para consultar o saldo do estabelecimento!
+                const saldo_final = await this.consultarSaldo(item);
+
                 retorno.push({
                     estabelecimento: item.nome,
                     cnpj: item.cnpj,
@@ -189,11 +202,11 @@ export default class UsersController {
                         quantidade: transacoes.length,
                         total: transacoes.reduce((total, item) => total + parseFloat(item.amount), 0).toFixed(2),
                         tarifa: transacoes.reduce((total, item) => total + parseFloat(item.fees), 0).toFixed(2),
-                        saldo: transacoes.reduce((total, item) => total + (parseFloat(item.amount) - parseFloat(item.fees)), 0).toFixed(2),
+                        saldo: saldo_final,
                         transacoes: await Promise.all(
                             transacoes.map(async (transacao) => {
                                 // Chama a função de busca de nome do terminal!
-                                const descricaoTerminal = await this.buscarTerminal(transacao, item)
+                                const descricaoTerminal = await this.buscarTerminal(transacao, item, terminal)
                                 return {
                                     id: transacao.id,
                                     total: transacao.amount,
@@ -212,7 +225,7 @@ export default class UsersController {
                 })
             }
             // Retorna mensagem de sucesso!
-            return response.status(200).send({status: true, mensagem: "Transações retornadas com sucesso!", dados: retorno})
+            return response.status(200).send({ status: true, mensagem: "Transações retornadas com sucesso!", dados: retorno })
         } catch (error) {
             // Chama a função de verificação do erro!
             handleErrorResponse(response, error)
@@ -251,6 +264,36 @@ export default class UsersController {
         }
 
         return transacoes
+    }
+
+    // Função para consultar o saldo do estabelecimento!
+    private async consultarSaldo(item: any) {
+        try {
+            const options = {
+                method: "get",
+                maxBodyLength: Infinity,
+                url: `https://api.zoop.ws/v1/marketplaces/${item.identificador}/sellers/${item.id}/balances`,
+                headers: {
+                    accept: "application/json",
+                    authorization: "Basic " + item.chave
+                }
+            }
+
+            // Chama a requisição de acordo com a integração!
+            const result = await api(options)
+
+            const valor = parseFloat(result.items.current_balance) / 100;
+            const valorFormatado = valor.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2
+            });
+
+            return valorFormatado
+
+        } catch (error) {
+            return error
+        }
     }
 
 }

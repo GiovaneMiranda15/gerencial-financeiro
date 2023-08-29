@@ -47,6 +47,13 @@ const databaseConfig: DatabaseConfig = {
       },
       healthCheck: false,
       debug: false,
+      pool: {
+        min: 0,
+        max: 10,
+        createTimeoutMillis: 8000,
+        acquireTimeoutMillis: 8000,
+        idleTimeoutMillis: 8000
+      }
     },
 
   }

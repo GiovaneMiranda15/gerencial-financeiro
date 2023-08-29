@@ -5,9 +5,9 @@ import { handleErrorResponse } from "App/Utils/HandleErrorResponse";
 
 export default class IntegracaoUseController {
 
-    
+
     // Função para definir od tipos de pagamento! 
-    private tipoPagamento = (tipo: any, cobranca:any) => {
+    private tipoPagamento = (tipo: any, cobranca: any) => {
         switch (true) {
             case (cobranca == 'BOLETO_PIX' && tipo == 'PIX'):
                 return "QRCODE BOLETO"
@@ -91,14 +91,13 @@ export default class IntegracaoUseController {
 
                     for (const itemRecebimento of recebimentos) {
                         for (const pagamento of itemRecebimento.pagamentos) {
-                            console.log(itemRecebimento.tipo_cobranca+"/"+pagamento.origem_pagamento)
                             transacoes.push({
                                 cliente: itemRecebimento.sacado_razao,
                                 valor_boleto: itemRecebimento.valor_cobranca,
                                 pedido: itemRecebimento.pedido_numero,
                                 observacao: itemRecebimento.observacao,
                                 origem: itemRecebimento.tipo_cobranca,
-                                forma_pagamento:  (this.tipoPagamento(pagamento.origem_pagamento, itemRecebimento.tipo_cobranca)), // Chama a função para retornar o tipo de pagamento!
+                                forma_pagamento: (this.tipoPagamento(pagamento.origem_pagamento, itemRecebimento.tipo_cobranca)), // Chama a função para retornar o tipo de pagamento!
                                 data_documento: itemRecebimento.data_documento,
                                 data_vencimento: itemRecebimento.data_vencimento,
                                 data_pagamento: pagamento.data_quitacao,
@@ -108,7 +107,18 @@ export default class IntegracaoUseController {
                         }
                     }
 
-                    return transacoes;
+                    return transacoes.sort((a, b) => {
+                        // Primeiro, comparar as datas de pagamento
+                        if (a.data_pagamento < b.data_pagamento) {
+                            return -1;
+                        }
+                        if (a.data_pagamento > b.data_pagamento) {
+                            return 1;
+                        }
+
+                        // Se as datas de pagamento forem iguais, comparar os clientes
+                        return a.cliente.localeCompare(b.cliente);
+                    });
                 };
 
                 // Montagem dos dados!

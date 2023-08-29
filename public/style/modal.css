@@ -1,118 +1,138 @@
+/* Import de fontes */
+@import url("https://fonts.googleapis.com/css2?family=Righteous&family=Sarala:wght@400;700&display=swap");
 
-    @import url("https://fonts.googleapis.com/css2?family=Righteous&family=Sarala:wght@400;700&display=swap");
+/* Variáveis para cores */
+:root {
+  --primary-color: #0f6b35;
+  --secondary-color: #6c757d;
+  --modal-background: #343a40;
+  --box-shadow-color: rgba(0, 0, 0, 0.1);
+}
 
-    .modal-dialog {
-        max-width: 600px;
-    }
+/* Estilos gerais */
+body {
+  font-family: 'Sarala', sans-serif;
+}
 
-    .modal-content {
-        background-color: white;
-        border: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-family: 'Sarala'
-    }
+/* Modal */
+.modal-dialog {
+  max-width: 600px;
+}
 
-    .modal-header {
-        background-color: #343a40;
-        color: white;
-        padding: 15px;
-    }
+.modal-content {
+  background-color: white;
+  border: none;
+  box-shadow: 0 2px 10px var(--box-shadow-color);
+}
 
-    .modal-title {
-        font-size: 1.2rem;
-    }
+.modal-header {
+  background-color: var(--modal-background);
+  color: white;
+  padding: 15px;
+}
 
-    .modal-body {
-        padding: 20px;
-    }
+.modal-title {
+  font-size: 1.2rem;
+}
 
-    .modal-footer {
-        border-top: none;
-        padding: 15px;
-        text-align: right;
-    }
+.modal-body {
+  padding: 20px;
+}
 
-    .btn {
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
+.modal-footer {
+  border-top: none;
+  padding: 15px;
+  text-align: right;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
 
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-        font-size: 1rem;
-    }
+/* Botões */
+.btn {
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 4px;
+  font-size: 1rem;
+}
 
-    .btn-primary {
-        background-color: #0f6b35;
-        color: white;
-        font-size: 1rem;
-    }
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: white;
+}
 
-    .btn-primary:hover {
-        background-color: #094723;
-    }
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
 
-    .btn-close {
-        font-size: 1.2rem;
-        color: #fff;
-    }
+.btn-primary:hover {
+  background-color: #094723;
+}
 
-    .modal-body a:hover {
-        text-decoration: underline;
-    }
+.btn-close {
+  font-size: 1.2rem;
+  color: #fff;
+}
 
-    .modal-alerts {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1050;
-        font-family: 'Sarala'
-    }
+/* Links na modal */
+.modal-body a:hover {
+  text-decoration: underline;
+}
 
-    .modal-alert {
-        width: 300px;
-        margin-bottom: 10px;
-    }
+/* Alerts */
+.modal-alerts {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
+}
 
-    .modal-body form {
-        max-width: 100%;
-    }
+.modal-alert {
+  width: 300px;
+  margin-bottom: 10px;
+}
 
-    .modal-body input,
-    .modal-body select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
+/* Formulários */
+.modal-body form {
+  max-width: 100%;
+}
 
-    @media (max-width: 768px) {
+.modal-body input,
+.modal-body select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
 
-        .modal-body input,
-        .modal-body select {
-            width: 100%;
-        }
+/* Responsividade */
+@media (max-width: 768px) {
+  .modal-body input,
+  .modal-body select {
+    width: 100%;
+  }
 
-        .modal-footer {
-            display: flex;
-            flex-direction: column;
-            justify-content: center
-        }
-    }
+  .modal-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
 
-    .filtro-estabelecimento+.select2-container, 
-    .filtro-tipo+.select2-container,
-    .filtro-terminal+.select2-container{
-        width: 100% !important;
-        margin-bottom: 15px
-    }
+/* Estilos para os selects do tipo .select2-container */
+.filtro-estabelecimento+.select2-container,
+.filtro-tipo+.select2-container,
+.filtro-terminal+.select2-container {
+  width: 100% !important;
+  margin-bottom: 15px;
+}
 
-    .select2-dropdown {
-        z-index: 9999;
-        position: relative !important;
-    }
+.select2-dropdown {
+  z-index: 9999;
+  position: relative !important;
+}
