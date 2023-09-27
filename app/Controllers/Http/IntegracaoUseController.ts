@@ -126,6 +126,7 @@ export default class IntegracaoUseController {
                     id: item.id,
                     estabelecimento: item.nome,
                     cnpj: item.cnpj,
+                    repasse: item.repasse,
                     saldo: {
                         quantidade: recebimentos.reduce((total: number, item: any) => total + item.pagamentos.length, 0),
                         total: recebimentos.reduce((total: number, item: any) => total + item.pagamentos.reduce((subtotal: number, pagamento: any) => subtotal + parseFloat(pagamento.valor_pago), 0), 0).toFixed(2),

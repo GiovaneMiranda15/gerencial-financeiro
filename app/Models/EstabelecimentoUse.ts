@@ -17,6 +17,9 @@ export default class EstabelecimentosUse extends BaseModel {
   @column()
   public chave: string
 
+  @column()
+  public repasse: boolean
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

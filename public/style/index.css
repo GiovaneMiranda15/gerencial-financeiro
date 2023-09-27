@@ -393,7 +393,7 @@ body {
 
 #view-all,
 #view-detailed {
-    background-color: #0f6b35;
+    background-color: #5a6268;
     border: none;
     border-radius: 5px;
     color: white;
@@ -404,11 +404,11 @@ body {
 
 #view-all:hover,
 #view-detailed:hover {
-    background-color: #094723;
+    background-color: #0f6b35;
 }
 
 .active-view {
-    background-color: #094723 !important;
+    background-color: #0f6b35 !important;
 }
 
 .scrollable-table {

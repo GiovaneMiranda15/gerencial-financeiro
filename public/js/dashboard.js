@@ -425,7 +425,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (viewMode === "total") {
                 newRow.innerHTML = filtro.getAttribute("data-dashboard") !== 'USE'
                     ? `<td>${item.estabelecimento}</td><td>${item.cnpj}</td><td>R$ ${item.saldo.saldo}</td><td>${item.saldo.quantidade}</td><td>R$ ${item.saldo.total}</td><td>R$ ${item.saldo.tarifa}</td>`
-                    : `<td>${item.estabelecimento}</td><td>${item.cnpj}</td><td>R$ ${item.saldo.saldo}</td><td>${item.saldo.quantidade}</td><td>R$ ${item.saldo.total}</td><td>R$ ${item.saldo.tarifa}</td><td><button data-repasse='${JSON.stringify({ id: item.id, cnpj: item.cnpj })}' class="repasse-button">Solicitar Repasse</button>`
+                    : `<td>${item.estabelecimento}</td><td>${item.cnpj}</td><td>R$ ${item.saldo.saldo}</td><td>${item.saldo.quantidade}</td><td>R$ ${item.saldo.total}</td><td>R$ ${item.saldo.tarifa}</td><td>${item.repasse ? `<button data-repasse='`+JSON.stringify({ id: item.id, cnpj: item.cnpj })+`' class="repasse-button">Solicitar Repasse</button>`: ``}`
             } else if (viewMode === "detailed") {
                 item.saldo.transacoes.forEach(transacao => {
                     const newTransacaoRow = document.createElement("tr");
