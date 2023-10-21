@@ -344,9 +344,8 @@ document.addEventListener("DOMContentLoaded", function () {
             var confirmed = confirm("Deseja realmente solicitar o repasse para o CNPJ " + repasseData.cnpj + "?");
 
             if (confirmed) {
-                fetch('/repasse', {
+                fetch(`api/use/repasse/${repasseData.id}`, {
                     method: 'POST',
-                    body: JSON.stringify({ identificador: repasseData.id }),
                     headers: {
                         'Content-Type': 'application/json'
                     }
